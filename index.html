@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MARK-9 — Personal Intelligence Command Center</title>
+  <meta name="description" content="MARK-9 is a private desktop AI assistant for voice, tasks, email, and modular intelligence providers.">
+  <style>
+    :root{
+      --void:#03070b;
+      --void-2:#071116;
+      --panel:rgba(9,23,29,.78);
+      --panel-solid:#0a1920;
+      --line:rgba(111,238,239,.19);
+      --line-strong:rgba(111,238,239,.52);
+      --cyan:#75f7f1;
+      --cyan-deep:#1abcc6;
+      --mint:#aaff89;
+      --amber:#ffc766;
+      --rose:#ff7182;
+      --text:#ecffff;
+      --muted:#83a3a7;
+      --muted-2:#527075;
+      --shadow:0 28px 75px rgba(0,0,0,.48);
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0; min-width:320px; background:var(--void); color:var(--text);
+      font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      overflow-x:hidden;
+    }
+    button,input,select{font:inherit}
+    button{cursor:pointer}
+    .world,.world:before,.world:after{position:fixed;inset:0;pointer-events:none}
+    .world{
+      z-index:-5;
+      background:
+        radial-gradient(circle at 50% 0%,rgba(30,155,163,.14),transparent 31rem),
+        radial-gradient(circle at 88% 66%,rgba(43,116,120,.11),transparent 30rem),
+        radial-gradient(circle at 3% 93%,rgba(93,149,99,.09),transparent 25rem),
+        linear-gradient(130deg,#020507,#071217 52%,#020608);
+    }
+    .world:before{
+      content:""; opacity:.25;
+      background-image:linear-gradient(rgba(111,247,241,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(111,247,241,.055) 1px,transparent 1px);
+      background-size:54px 54px;
+      mask-image:radial-gradient(ellipse at 50% 36%,#000 0%,transparent 72%);
+    }
+    .world:after{
+      content:"";opacity:.1;
+      background:repeating-linear-gradient(0deg,transparent 0 3px,rgba(255,255,255,.09) 4px);
+      mix-blend-mode:soft-light;
+    }
+    .shell{max-width:1440px;margin:auto;padding:0 28px}
+    .nav{
+      height:82px; display:flex;align-items:center;justify-content:space-between;gap:28px;
+      border-bottom:1px solid rgba(111,238,239,.14);
+    }
+    .brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--text)}
+    .mark-symbol{
+      width:39px;height:39px;border:1px solid var(--cyan);border-radius:50%;position:relative;
+      box-shadow:0 0 19px rgba(117,247,241,.35),inset 0 0 15px rgba(117,247,241,.1);
+    }
+    .mark-symbol:before{
+      content:"";position:absolute;inset:6px;border:1px solid rgba(117,247,241,.7);
+      border-radius:48% 52% 43% 57%;border-bottom-color:transparent;transform:rotate(-25deg)
+    }
+    .mark-symbol:after{
+      content:"";position:absolute;width:7px;height:7px;left:15px;top:15px;background:var(--cyan);
+      border-radius:50%;box-shadow:0 0 15px var(--cyan)
+    }
+    .brand-name{font-weight:800;letter-spacing:.22em;font-size:.87rem}
+    .brand-type{display:block;margin-top:3px;color:var(--muted);font-size:.57rem;letter-spacing:.16em}
+    .nav-links{display:flex;align-items:center;gap:26px}
+    .nav-links a{color:#a3c2c4;text-decoration:none;font-size:.77rem;letter-spacing:.1em;transition:.2s}
+    .nav-links a:hover{color:var(--cyan)}
+    .nav-actions{display:flex;gap:9px;align-items:center}
+    .button{
+      border:1px solid var(--line);background:rgba(10,33,39,.65);color:#c9e3e4;border-radius:5px;
+      padding:11px 15px;font-weight:750;font-size:.7rem;letter-spacing:.1em;transition:.22s;
+    }
+    .button:hover{border-color:var(--cyan);color:var(--cyan);transform:translateY(-1px)}
+    .button.primary{background:linear-gradient(135deg,#74f4ec,#2bbec8);color:#062226;border-color:transparent;box-shadow:0 7px 28px rgba(50,201,204,.18)}
+    .button.primary:hover{box-shadow:0 10px 30px rgba(80,241,237,.35);color:#031518}
+    .button.large{padding:15px 21px;font-size:.73rem}
+    .hero{min-height:650px;display:grid;grid-template-columns:1fr .9fr;align-items:center;gap:55px;padding:78px 34px 62px}
+    .eyebrow{display:flex;align-items:center;gap:9px;color:var(--cyan);font-size:.65rem;font-weight:750;letter-spacing:.19em}
+    .eyebrow:before{content:"";width:24px;height:1px;background:var(--cyan);box-shadow:0 0 9px var(--cyan)}
+    h1{margin:19px 0 20px;font-size:clamp(3rem,6.2vw,6.35rem);line-height:.91;letter-spacing:-.065em;font-weight:770}
+    h1 span{display:block;color:transparent;-webkit-text-stroke:1px rgba(153,255,251,.74);text-shadow:0 0 28px rgba(83,237,235,.16)}
+    .hero-copy{max-width:570px;color:#9fbdc0;line-height:1.75;font-size:1.03rem}
+    .hero-actions{display:flex;gap:11px;flex-wrap:wrap;margin-top:29px}
+    .system-proof{display:flex;gap:21px;flex-wrap:wrap;margin-top:35px}
+    .proof{border-left:1px solid var(--line-strong);padding-left:10px}
+    .proof b{display:block;font-size:.88rem;letter-spacing:.06em;color:var(--text)}
+    .proof span{font-size:.6rem;color:var(--muted);letter-spacing:.1em}
+    .hero-visual{height:495px;position:relative;display:grid;place-items:center}
+    .orbital{position:absolute;border:1px solid rgba(117,247,241,.17);border-radius:50%}
+    .ring-one{width:410px;height:410px;border-top-color:var(--cyan);border-bottom-color:var(--cyan);animation:spin 22s linear infinite}
+    .ring-two{width:320px;height:320px;border-left-color:var(--mint);border-right-color:rgba(170,255,137,.62);animation:spin-back 15s linear infinite}
+    .ring-three{width:480px;height:480px;border-style:dashed;opacity:.7;animation:spin 55s linear infinite}
+    .core{
+      width:200px;height:200px;border-radius:50%;position:relative;display:grid;place-items:center;z-index:2;
+      background:radial-gradient(circle,rgba(160,255,251,.78) 0 2%,rgba(51,199,204,.22) 22%,rgba(5,31,38,.92) 68%);
+      border:1px solid rgba(155,255,252,.8);
+      box-shadow:0 0 20px rgba(117,247,241,.75),0 0 92px rgba(41,204,208,.35),inset 0 0 38px rgba(117,247,241,.25);
+      animation:breathe 4s ease-in-out infinite;
+    }
+    .core:before{content:"";position:absolute;inset:14px;border:1px solid rgba(117,247,241,.55);border-radius:42% 58% 55% 45%;animation:spin 8s linear infinite}
+    .core-label{text-align:center;text-shadow:0 0 18px var(--cyan)}
+    .core-label b{display:block;font-size:1.42rem;letter-spacing:.27em;margin-left:.27em}
+    .core-label small{font-size:.57rem;color:var(--cyan);letter-spacing:.18em}
+    .readout{
+      position:absolute;z-index:3;padding:10px 12px;min-width:128px;border:1px solid var(--line);
+      background:rgba(5,19,25,.74);backdrop-filter:blur(10px);font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
+      font-size:.59rem;line-height:1.7;color:#84acaf;box-shadow:var(--shadow)
+    }
+    .readout b{display:block;color:var(--mint);font-weight:500;letter-spacing:.08em}
+    .r-one{top:44px;right:8px}.r-two{bottom:53px;left:1px}.r-three{right:-8px;bottom:155px}
+    .readout:before{content:"";position:absolute;height:1px;width:35px;background:var(--line-strong)}
+    .r-one:before{left:-35px;top:20px}.r-two:before{right:-35px;top:20px}.r-three:before{left:-35px;top:20px}
+    .section{padding:88px 34px;border-top:1px solid rgba(111,238,239,.12)}
+    .section-head{max-width:740px;margin-bottom:39px}
+    h2{margin:12px 0;color:var(--text);font-size:clamp(2rem,3.5vw,3.45rem);letter-spacing:-.045em;line-height:1}
+    .section-intro{margin:0;color:var(--muted);line-height:1.7;max-width:650px}
+    .architecture{display:grid;grid-template-columns:1.2fr .8fr;gap:17px}
+    .architecture-main,.module-card,.installation,.setup-card{border:1px solid var(--line);background:linear-gradient(135deg,rgba(12,32,39,.78),rgba(5,15,20,.77));box-shadow:var(--shadow)}
+    .architecture-main{padding:26px;min-height:365px;position:relative;overflow:hidden}
+    .architecture-main:after{content:"";position:absolute;width:400px;height:400px;border:1px solid rgba(117,247,241,.1);border-radius:50%;right:-180px;bottom:-230px}
+    .architecture-top{display:flex;align-items:center;justify-content:space-between;gap:15px}
+    .mini-title{font-size:.64rem;color:var(--muted);letter-spacing:.16em;font-weight:750}
+    .live{font-size:.58rem;letter-spacing:.12em;color:var(--mint)}.live:before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--mint);box-shadow:0 0 9px var(--mint);margin-right:6px}
+    .architecture-map{position:relative;z-index:1;display:grid;grid-template-columns:1fr 1.35fr 1fr;align-items:center;gap:15px;margin-top:29px}
+    .node-stack{display:grid;gap:11px}
+    .node{border:1px solid rgba(117,247,241,.19);background:rgba(9,28,34,.69);padding:12px;font-size:.7rem;color:#a9c8c9;letter-spacing:.04em}
+    .node strong{display:block;color:var(--cyan);font-size:.6rem;letter-spacing:.12em;margin-bottom:5px}
+    .hub{min-height:165px;display:grid;place-items:center;text-align:center;border:1px solid var(--line-strong);background:radial-gradient(circle,rgba(66,221,221,.16),rgba(7,27,33,.84) 70%);box-shadow:inset 0 0 30px rgba(117,247,241,.07)}
+    .hub b{display:block;font-size:1.25rem;letter-spacing:.18em;margin-left:.18em}
+    .hub span{font-size:.58rem;letter-spacing:.14em;color:var(--cyan)}
+    .modules{display:grid;grid-template-columns:1fr 1fr;gap:17px}
+    .module-card{padding:21px;min-height:174px;transition:.25s}
+    .module-card:hover{border-color:var(--line-strong);transform:translateY(-3px)}
+    .module-icon{color:var(--cyan);font-family:ui-monospace,monospace;font-size:1.25rem}
+    .module-card h3{margin:16px 0 7px;font-size:.9rem;letter-spacing:.03em}
+    .module-card p{margin:0;color:var(--muted);font-size:.75rem;line-height:1.65}
+    .workflow{display:grid;grid-template-columns:repeat(3,1fr);gap:17px}
+    .workflow-card{min-height:238px;padding:23px;border:1px solid var(--line);background:rgba(8,23,29,.62);position:relative;overflow:hidden}
+    .workflow-card:before{content:attr(data-index);display:block;color:rgba(117,247,241,.35);font-size:2.7rem;font-family:ui-monospace,monospace;line-height:1}
+    .workflow-card h3{font-size:1rem;margin:24px 0 9px}
+    .workflow-card p{color:var(--muted);font-size:.78rem;line-height:1.7;margin:0}
+    .workflow-card:after{content:"";position:absolute;bottom:0;left:0;width:100%;height:2px;background:linear-gradient(90deg,var(--cyan),transparent);opacity:.7}
+    .installation{display:grid;grid-template-columns:.88fr 1.12fr;overflow:hidden}
+    .install-copy{padding:34px;background:linear-gradient(145deg,rgba(15,40,45,.9),rgba(6,18,23,.8))}
+    .install-copy h3{font-size:1.55rem;line-height:1.15;margin:14px 0}
+    .install-copy p{font-size:.82rem;color:var(--muted);line-height:1.7}
+    .platforms{display:flex;gap:8px;margin-top:25px;flex-wrap:wrap}
+    .platform{border:1px solid var(--line);padding:8px 10px;font-size:.63rem;letter-spacing:.09em;color:#bbd7d8}
+    .platform.ready{color:var(--mint);border-color:rgba(170,255,137,.34)}
+    .terminal{padding:27px;background:#041015;font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+    .terminal-top{display:flex;gap:6px;margin-bottom:25px}.dot{width:8px;height:8px;border-radius:50%;background:#29464b}.dot:first-child{background:var(--rose)}.dot:nth-child(2){background:var(--amber)}.dot:nth-child(3){background:var(--mint)}
+    .terminal-line{font-size:.78rem;color:#aac8ca;line-height:2}.terminal-line .prompt{color:var(--cyan)}.terminal-line .ok{color:var(--mint)}.terminal-line .comment{color:#54757a}
+    .install-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:25px}
+    .identity-section{display:grid;grid-template-columns:1fr .9fr;gap:22px;align-items:center}
+    .identity-copy p{color:var(--muted);line-height:1.75;max-width:590px}
+    .identity-points{display:grid;gap:11px;margin-top:25px}
+    .identity-point{display:flex;gap:11px;align-items:flex-start;color:#b6d1d2;font-size:.78rem;line-height:1.55}
+    .identity-point i{font-style:normal;color:var(--mint)}
+    .setup-card{padding:23px}
+    .setup-head{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:15px;margin-bottom:17px}
+    .setup-head b{font-size:.72rem;letter-spacing:.11em}.step{font-size:.58rem;color:var(--cyan);letter-spacing:.11em}
+    label{display:block;color:#8facaf;font-size:.61rem;font-weight:700;letter-spacing:.12em;margin:13px 0 7px}
+    .field,select{width:100%;outline:none;color:var(--text);padding:12px;border:1px solid var(--line);border-radius:3px;background:rgba(4,17,22,.88);font-size:.79rem}
+    .field:focus,select:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(117,247,241,.08)}
+    .setup-preview{margin-top:16px;padding:12px;border-left:2px solid var(--mint);background:rgba(170,255,137,.045);font-size:.72rem;color:#b9d8d9;line-height:1.6}
+    .setup-preview span{color:var(--mint);font-size:.59rem;letter-spacing:.1em}
+    .footer{display:flex;justify-content:space-between;gap:18px;align-items:center;padding:27px 34px;color:var(--muted-2);font-size:.62rem;letter-spacing:.08em;border-top:1px solid rgba(111,238,239,.12)}
+    .footer b{color:#8dadaf}
+    .modal{position:fixed;inset:0;background:rgba(0,7,10,.75);backdrop-filter:blur(8px);z-index:20;display:none;place-items:center;padding:20px}
+    .modal.open{display:grid}
+    .modal-box{width:min(530px,100%);border:1px solid var(--line-strong);background:linear-gradient(145deg,#0c242b,#061217);box-shadow:0 30px 100px #000;padding:28px;position:relative;animation:up .25s ease}
+    .modal-box h3{margin:10px 0 8px;font-size:1.5rem}.modal-box p{color:var(--muted);font-size:.81rem;line-height:1.65}
+    .close{position:absolute;right:14px;top:12px;border:0;background:transparent;color:var(--muted);font-size:1.35rem}
+    .downloaded{display:none;margin-top:17px;color:var(--mint);font-size:.74rem;letter-spacing:.06em}
+    @keyframes spin{to{transform:rotate(360deg)}}@keyframes spin-back{to{transform:rotate(-360deg)}}@keyframes breathe{50%{transform:scale(1.045);box-shadow:0 0 28px rgba(117,247,241,.9),0 0 112px rgba(41,204,208,.44),inset 0 0 38px rgba(117,247,241,.25)}}@keyframes up{from{transform:translateY(10px);opacity:0}to{transform:translateY(0);opacity:1}}
+    @media(max-width:980px){
+      .nav-links{display:none}.hero{grid-template-columns:1fr;padding:65px 12px 40px;gap:22px}.hero-visual{height:390px;transform:scale(.85);margin:-32px 0}.architecture,.identity-section,.installation{grid-template-columns:1fr}.workflow{grid-template-columns:1fr}.section{padding:65px 12px}.architecture-map{grid-template-columns:1fr}.hub{min-height:100px}.modules{grid-template-columns:1fr 1fr}
+    }
+    @media(max-width:620px){
+      .shell{padding:0 17px}.nav{height:70px}.nav-actions .button:not(.primary){display:none}.brand-type{display:none}.hero{padding-top:53px}h1{font-size:3.45rem}.hero-copy{font-size:.9rem}.hero-visual{transform:scale(.67);margin:-65px -70px;height:320px}.r-one{right:0}.modules{grid-template-columns:1fr}.architecture-main{padding:18px}.footer{padding:22px 12px;display:block;line-height:1.8}.footer span{display:block}.section{padding-top:54px;padding-bottom:54px}
+    }
+  </style>
+</head>
+<body>
+  <div class="world"></div>
+  <main class="shell">
+    <header class="nav">
+      <a class="brand" href="#top" aria-label="MARK-9 home">
+        <span class="mark-symbol"></span>
+        <span><strong class="brand-name">MARK-9</strong><small class="brand-type">PERSONAL INTELLIGENCE SYSTEM</small></span>
+      </a>
+      <nav class="nav-links" aria-label="Primary navigation">
+        <a href="#architecture">ARCHITECTURE</a>
+        <a href="#capabilities">CAPABILITIES</a>
+        <a href="#install">INSTALL</a>
+        <a href="#identity">IDENTITY</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="button" onclick="document.getElementById('install').scrollIntoView()">SYSTEM SPECS</button>
+        <button class="button primary" onclick="openInstall()">GET MARK-9</button>
+      </div>
+    </header>
+
+    <section class="hero" id="top">
+      <div>
+        <div class="eyebrow">DESKTOP INTELLIGENCE, YOUR TERMS</div>
+        <h1>YOUR SIGNAL.<span>YOUR SYSTEM.</span></h1>
+        <p class="hero-copy">MARK-9 is a private command center for the life behind your screen. Speak naturally, direct your work, secure your access, and orchestrate intelligence from providers you choose.</p>
+        <div class="hero-actions">
+          <button class="button primary large" onclick="openInstall()">INSTALL MARK-9</button>
+          <a class="button large" href="#architecture">EXPLORE THE CORE</a>
+        </div>
+        <div class="system-proof">
+          <div class="proof"><b>LOCAL-FIRST</b><span>YOUR DESKTOP · YOUR CONTROL</span></div>
+          <div class="proof"><b>VOICE AWARE</b><span>NATURAL CONVERSATION</span></div>
+          <div class="proof"><b>MODULAR</b><span>PROVIDERS ON YOUR TERMS</span></div>
+        </div>
+      </div>
+      <div class="hero-visual" aria-label="Animated MARK-9 intelligence core">
+        <div class="orbital ring-three"></div><div class="orbital ring-one"></div><div class="orbital ring-two"></div>
+        <div class="core"><div class="core-label"><b>MARK</b><small>CORE ONLINE</small></div></div>
+        <div class="readout r-one"><b>VOICE PRINT</b>AUTHENTICATED<br>98.7% MATCH</div>
+        <div class="readout r-two"><b>MEMORY GRID</b>14 ACTIVE THREADS<br>SYNC: STABLE</div>
+        <div class="readout r-three"><b>PROVIDER LAYER</b>3 NODES READY</div>
+      </div>
+    </section>
+
+    <section class="section" id="architecture">
+      <div class="section-head">
+        <div class="eyebrow">THE MARK-9 ARCHITECTURE</div>
+        <h2>One core. Every signal connected.</h2>
+        <p class="section-intro">Built as an actual desktop system rather than a browser chat box. MARK-9 gives each capability a clear role, coordinated through a personal intelligence core.</p>
+      </div>
+      <div class="architecture">
+        <div class="architecture-main">
+          <div class="architecture-top"><span class="mini-title">LIVE SYSTEM TOPOLOGY</span><span class="live">NOMINAL</span></div>
+          <div class="architecture-map">
+            <div class="node-stack">
+              <div class="node"><strong>INPUT LAYER</strong>Voice · Text · Shortcuts</div>
+              <div class="node"><strong>TRUST LAYER</strong>Voice Identity · Permissions</div>
+            </div>
+            <div class="hub"><div><b>MARK-9</b><span>PERSONAL INTELLIGENCE CORE</span></div></div>
+            <div class="node-stack">
+              <div class="node"><strong>CONTEXT LAYER</strong>Tasks · Memory · Mail</div>
+              <div class="node"><strong>PROVIDER LAYER</strong>Local · Cloud · Custom</div>
+            </div>
+          </div>
+        </div>
+        <div class="modules">
+          <article class="module-card"><div class="module-icon">◉</div><h3>Conversation Engine</h3><p>Natural voice and text dialogue that stays close to the work in front of you.</p></article>
+          <article class="module-card"><div class="module-icon">⌁</div><h3>Task Orbit</h3><p>Capture requests, shape plans, and keep active priorities in one operational view.</p></article>
+          <article class="module-card"><div class="module-icon">✉</div><h3>Mail Relay</h3><p>Connect your inbox to summarize, draft, surface, and route the messages that matter.</p></article>
+          <article class="module-card"><div class="module-icon">◇</div><h3>Provider Matrix</h3><p>Choose the AI engines that fit your workflow without locking your assistant to one mind.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="capabilities">
+      <div class="section-head">
+        <div class="eyebrow">DESIGNED FOR A DESKTOP LIFE</div>
+        <h2>From a request to a resolved thread.</h2>
+      </div>
+      <div class="workflow">
+        <article class="workflow-card" data-index="01">
+          <h3>Speak or type naturally</h3>
+          <p>Ask MARK-9 to find context, prepare a response, turn a thought into a task, or simply think alongside you. The interface stays calm until called into action.</p>
+        </article>
+        <article class="workflow-card" data-index="02">
+          <h3>Confirm the operator</h3>
+          <p>Voice authentication provides an optional personal gate before sensitive sessions and actions. Your command center should know whose signal it is receiving.</p>
+        </article>
+        <article class="workflow-card" data-index="03">
+          <h3>Route through your tools</h3>
+          <p>Tasks, email, and selectable AI providers remain modular. MARK-9 coordinates your stack while you retain authority over connections and configuration.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="install">
+      <div class="section-head">
+        <div class="eyebrow">DEPLOYMENT SEQUENCE</div>
+        <h2>Install the command center.</h2>
+        <p class="section-intro">A focused desktop installation, followed by a setup sequence that makes MARK-9 unmistakably yours.</p>
+      </div>
+      <div class="installation">
+        <div class="install-copy">
+          <div class="eyebrow">DESKTOP RELEASE</div>
+          <h3>Ready when your workspace is.</h3>
+          <p>Install MARK-9 as your personal desktop companion. Connect only the services you approve, choose an intelligence provider, and activate voice identity when you are ready.</p>
+          <div class="platforms">
+            <span class="platform ready">● WINDOWS 11</span>
+            <span class="platform ready">● macOS</span>
+            <span class="platform">LINUX · SOON</span>
+          </div>
+          <div class="install-actions">
+            <button class="button primary" onclick="openInstall()">DOWNLOAD DESKTOP APP</button>
+            <button class="button" onclick="showCommand()">COPY INSTALL COMMAND</button>
+          </div>
+        </div>
+        <div class="terminal" aria-live="polite">
+          <div class="terminal-top"><i class="dot"></i><i class="dot"></i><i class="dot"></i></div>
+          <div class="terminal-line"><span class="comment">// MARK-9 installation channel</span></div>
+          <div class="terminal-line"><span class="prompt">mark@desktop:~$</span> mark9 install --desktop</div>
+          <div class="terminal-line"><span class="ok">✓</span> Core package verified</div>
+          <div class="terminal-line"><span class="ok">✓</span> Secure local vault initialized</div>
+          <div class="terminal-line"><span class="ok">✓</span> Setup stage ready</div>
+          <div class="terminal-line"><span class="prompt">mark@desktop:~$</span> <span id="terminalCursor">_</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="identity">
+      <div class="identity-section">
+        <div class="identity-copy">
+          <div class="eyebrow">SETUP STAGE 01 · IDENTITY</div>
+          <h2>Define who MARK-9 becomes for you.</h2>
+          <p>The assistant begins with a core, not a fixed personality. During setup, give it a call sign, choose its communication style, and write the operating directive that shapes how it assists you.</p>
+          <div class="identity-points">
+            <div class="identity-point"><i>◆</i><span><b>Call sign</b> — name the intelligence you want at your side.</span></div>
+            <div class="identity-point"><i>◆</i><span><b>Interaction style</b> — from concise operator to thoughtful collaborator.</span></div>
+            <div class="identity-point"><i>◆</i><span><b>Core directive</b> — establish the purpose and boundaries for every session.</span></div>
+          </div>
+        </div>
+        <form class="setup-card" onsubmit="saveIdentity(event)">
+          <div class="setup-head"><b>IDENTITY CONFIGURATION</b><span class="step">01 / 04</span></div>
+          <label for="assistantName">ASSISTANT CALL SIGN</label>
+          <input class="field" id="assistantName" value="MARK-9" maxlength="24" placeholder="e.g. MARK-9">
+          <label for="style">COMMUNICATION MODE</label>
+          <select id="style">
+            <option>Calm & precise</option>
+            <option>Direct operator</option>
+            <option>Thoughtful collaborator</option>
+            <option>Creative strategist</option>
+          </select>
+          <label for="directive">CORE DIRECTIVE</label>
+          <input class="field" id="directive" value="Help me move with clarity and intent." maxlength="110">
+          <div class="setup-preview"><span>PREVIEW</span><br><span id="previewName">MARK-9</span>: “Ready. What are we moving forward today?”</div>
+          <button class="button primary" type="submit" style="margin-top:17px;width:100%">SAVE IDENTITY PROFILE</button>
+        </form>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <span><b>MARK-9</b> · PERSONAL INTELLIGENCE SYSTEM</span>
+      <span>PRIVATE BY DESIGN · MODULAR BY ARCHITECTURE · <span id="year"></span></span>
+    </footer>
+  </main>
+
+  <div class="modal" id="installModal" role="dialog" aria-modal="true" aria-labelledby="installTitle">
+    <div class="modal-box">
+      <button class="close" aria-label="Close dialog" onclick="closeInstall()">×</button>
+      <div class="eyebrow">MARK-9 DESKTOP RELEASE</div>
+      <h3 id="installTitle">Begin installation.</h3>
+      <p>Your installer is prepared for this environment. The initial launch will guide you through identity, voice authentication, provider selection, and optional email connection.</p>
+      <button class="button primary large" onclick="startDownload()">DOWNLOAD MARK-9 INSTALLER</button>
+      <div class="downloaded" id="downloaded">✓ INSTALLER REQUEST REGISTERED — SETUP SEQUENCE READY.</div>
+    </div>
+  </div>
+
+  <script>
+    const nameInput = document.getElementById('assistantName');
+    const previewName = document.getElementById('previewName');
+    nameInput.addEventListener('input', () => previewName.textContent = nameInput.value.trim() || 'MARK-9');
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    function openInstall(){ document.getElementById('installModal').classList.add('open'); }
+    function closeInstall(){ document.getElementById('installModal').classList.remove('open'); }
+    function startDownload(){
+      document.getElementById('downloaded').style.display = 'block';
+      const content = 'MARK-9 Desktop Installer\\n\\nInstallation request confirmed.\\nNext: launch MARK-9 and define your assistant identity.';
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(new Blob([content], {type:'text/plain'}));
+      link.download = 'MARK-9-Installation-Guide.txt';
+      link.click();
+      URL.revokeObjectURL(link.href);
+    }
+    function showCommand(){
+      navigator.clipboard?.writeText('mark9 install --desktop');
+      const cursor = document.getElementById('terminalCursor');
+      cursor.textContent = 'command copied';
+      cursor.style.color = 'var(--mint)';
+      setTimeout(()=>{cursor.textContent='_';cursor.style.color='';},1800);
+    }
+    function saveIdentity(event){
+      event.preventDefault();
+      const button = event.target.querySelector('button[type="submit"]');
+      const callSign = nameInput.value.trim() || 'MARK-9';
+      button.textContent = 'PROFILE SAVED · ' + callSign.toUpperCase();
+      setTimeout(()=>button.textContent='SAVE IDENTITY PROFILE',2200);
+    }
+    document.getElementById('installModal').addEventListener('click', e => {
+      if(e.target.id === 'installModal') closeInstall();
+    });
+    document.addEventListener('keydown', e => { if(e.key === 'Escape') closeInstall(); });
+  </script>
+</body>
+</html>
